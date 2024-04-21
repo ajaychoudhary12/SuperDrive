@@ -10,6 +10,9 @@
     </head>
     <body class="p-3 mb-2 bg-light text-black">
         <div class="container">
+            <div id="messageDiv">
+                <span th:text="${infoMessage}"></span>
+            </div>
             <div id="logoutDiv">
                 <form th:action="@{/logout}" method="POST">
                     <button type="submit" class="btn btn-secondary float-right">Logout</button>
@@ -77,8 +80,14 @@
                                 <tbody>
                                     <tr th:each="note: ${notes}">
                                         <td>
-                                            <button type="button" class="btn btn-success">Edit</button>
-                                            <a class="btn btn-danger">Delete</a>
+                                            <button type="button" class="btn btn-success"
+                                                    onclick="showNoteModal(${note.noteId}, '${note.noteTitle}', '${note.noteDescription}')">
+                                                Edit
+                                            </button>
+                                            <form th:action="@{/deleteNote}" method="post" style="display: inline;">
+                                                <input type="hidden" name="noteId" th:value="${note.noteId}" />
+                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                            </form>
                                         </td>
                                         <th scope="row" th:text="${note.noteTitle}"> </th>
                                         <td th:text="${note.noteDescription}"> </td>
@@ -97,7 +106,7 @@
                                         </button>
                                     </div>
                                     <div class="modal-body">
-                                        <form th:action="@{/home}" method="POST">
+                                        <form id="note-form" th:action="@{/notes}" method="POST">
                                             <input type="hidden" name="noteId" id="note-id">
                                             <div class="form-group">
                                                 <label for="note-title" class="col-form-label">Title</label>
