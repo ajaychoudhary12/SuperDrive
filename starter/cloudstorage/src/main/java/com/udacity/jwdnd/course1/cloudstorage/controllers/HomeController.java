@@ -34,17 +34,28 @@ public class HomeController {
     }
 
     @PostMapping("/notes")
-    public String addNewNote(Note note, Model model) {
+    public String handleSaveNote(Note note, Model model) {
         User user = getUser();
         if (user == null) {
             return "redirect:/logout";
         }
 
-        int rowsAffected = noteService.createNote(note, user.getUserId());
-        if (rowsAffected < 0) {
-            model.addAttribute("infoMessage", "Note creation failed");
+        if (note.getNoteId() == null) {
+            // Create new note
+
+            int rowsAffected = noteService.createNote(note, user.getUserId());
+            if (rowsAffected < 0) {
+                model.addAttribute("infoMessage", "Note creation failed");
+            } else {
+                model.addAttribute("infoMessage", "Note created successfully");
+            }
         } else {
-            model.addAttribute("infoMessage", "Note created successfully");
+            int rowsAffected = noteService.updateNote(note);
+            if (rowsAffected < 0) {
+                model.addAttribute("infoMessage", "Note update failed");
+            } else {
+                model.addAttribute("infoMessage", "Note updated successfully");
+            }
         }
 
         model.addAttribute("notes", noteService.getNotes(user.getUserId()));
@@ -54,6 +65,11 @@ public class HomeController {
 
     @PostMapping("/deleteNote")
     public String deleteNote(@RequestParam("noteId") Integer noteId, Model model) {
+        User user = getUser();
+        if (user == null) {
+            return "redirect:/logout";
+        }
+
         int rowsAffected = noteService.deleteNote(noteId);
 
         if (rowsAffected < 0) {
@@ -61,6 +77,8 @@ public class HomeController {
         } else {
             model.addAttribute("infoMessage", "Note deleted successfully");
         }
+
+        model.addAttribute("notes", noteService.getNotes(user.getUserId()));
         return "home";
     }
 

@@ -81,7 +81,7 @@
                                     <tr th:each="note: ${notes}">
                                         <td>
                                             <button type="button" class="btn btn-success"
-                                                    onclick="showNoteModal(${note.noteId}, '${note.noteTitle}', '${note.noteDescription}')">
+                                            th:attr="onclick=|showNoteModal('${note.noteId}', '${note.noteTitle}', '${note.noteDescription}')|">
                                                 Edit
                                             </button>
                                             <form th:action="@{/deleteNote}" method="post" style="display: inline;">
