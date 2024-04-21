@@ -48,9 +48,11 @@ public class HomeController {
             return "redirect:/logout";
         }
 
+        credentialModel.setUserId(user.getUserId());
+
         if (credentialModel.getCredentialId() == null) {
             // Create new credential
-            int rowsAffected = credentialService.createCredentialModel(credentialModel, user.getUserId());
+            int rowsAffected = credentialService.createCredentialModel(credentialModel);
             if (rowsAffected < 0) {
                 model.addAttribute("infoMessage", "Credential creation failed");
             } else {

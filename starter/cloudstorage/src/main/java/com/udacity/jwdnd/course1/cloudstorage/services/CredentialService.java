@@ -18,8 +18,7 @@ public class CredentialService {
         return credentialMapper.getCredentials(userId);
     }
 
-    public int createCredentialModel(CredentialModel credentialModel, Integer userId) {
-        credentialModel.setUserId(userId);
+    public int createCredentialModel(CredentialModel credentialModel) {
         return credentialMapper.insert(credentialModel);
     }
 
