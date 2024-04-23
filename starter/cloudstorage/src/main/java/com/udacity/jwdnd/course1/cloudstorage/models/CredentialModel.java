@@ -9,6 +9,7 @@ public class CredentialModel {
     private String key;
     private String password;
     private Integer userId;
+    private String decryptedPassword;
 
     public CredentialModel(Integer credentialId, String url, String username, String key, String password, Integer userId) {
         this.credentialId = credentialId;
@@ -65,5 +66,13 @@ public class CredentialModel {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public String getDecryptedPassword() {
+        return decryptedPassword;
+    }
+
+    public void setDecryptedPassword(String decryptedPassword) {
+        this.decryptedPassword = decryptedPassword;
     }
 }
