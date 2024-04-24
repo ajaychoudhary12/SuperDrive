@@ -25,4 +25,6 @@ public class FileService {
     }
 
     public int deleteFile(Integer fileId) { return fileMapper.delete(fileId); }
+
+    public File getFileById(Integer fileId) { return fileMapper.getFileById(fileId); }
 }

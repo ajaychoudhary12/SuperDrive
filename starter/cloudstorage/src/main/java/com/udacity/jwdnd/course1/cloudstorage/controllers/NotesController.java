@@ -43,7 +43,7 @@ public class NotesController {
         }
 
         model.addAttribute("notes", noteService.getNotes(user.getUserId()));
-        return "home";
+        return "redirect:/home";
     }
 
     @PostMapping("/deleteNote")
@@ -59,7 +59,7 @@ public class NotesController {
         }
 
         model.addAttribute("notes", noteService.getNotes(user.getUserId()));
-        return "home";
+        return "redirect:/home";
     }
 
     public User getUser() {

@@ -4,15 +4,19 @@ import com.udacity.jwdnd.course1.cloudstorage.models.File;
 import com.udacity.jwdnd.course1.cloudstorage.models.User;
 import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.services.UserService;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 
 @Controller
@@ -57,7 +61,7 @@ public class FileController {
         }
 
         model.addAttribute("files", fileService.getFiles(user.getUserId()));
-        return "home";
+        return "redirect:/home";
     }
 
     @PostMapping("/deleteFile")
@@ -73,7 +77,22 @@ public class FileController {
         }
 
         model.addAttribute("files", fileService.getFiles(user.getUserId()));
-        return "home";
+        return "redirect:/home";
+    }
+
+    @GetMapping("/download/{fileId}")
+    @ResponseBody
+    public ResponseEntity<byte[]> downloadFile(@PathVariable Integer fileId) {
+        File file = fileService.getFileById(fileId);
+        if (file == null || file.getFileData() == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(file.getContentType()));
+        headers.setContentDispositionFormData(file.getFilename(), file.getFilename());
+
+        return new ResponseEntity<>(file.getFileData(), headers, HttpStatus.OK);
     }
 
     public User getUser() {

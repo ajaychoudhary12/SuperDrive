@@ -54,7 +54,8 @@
                                 <tbody>
                                 <tr th:each="file: ${files}">
                                     <td>
-                                        <a target="_blank" class="btn btn-success">View</a>
+                                        <a th:href="@{/download/{fileId}(fileId=${file.fileId})}"
+                                           class="btn btn-success" target="_blank">View</a>
                                         <form th:action="@{/deleteFile}" method="post" style="display: inline;">
                                             <input type="hidden" name="fileId" th:value="${file.fileId}" />
                                             <button type="submit" class="btn btn-danger">Delete</button>

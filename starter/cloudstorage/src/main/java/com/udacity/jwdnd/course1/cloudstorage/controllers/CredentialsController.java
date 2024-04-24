@@ -49,7 +49,7 @@ public class CredentialsController {
 
         model.addAttribute("credentials", credentialService.getCredentialList(user.getUserId()));
 
-        return "home";
+        return "redirect:/home";
     }
 
     @PostMapping("/deleteCredential")
@@ -65,7 +65,7 @@ public class CredentialsController {
         }
 
         model.addAttribute("credentials", credentialService.getCredentialList(user.getUserId()));
-        return "home";
+        return "redirect:/home";
     }
 
     public User getUser() {
