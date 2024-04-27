@@ -38,7 +38,7 @@ public class FileController {
         if (existingFile != null) {
             model.addAttribute("infoMessage", "File with this name already exists");
             model.addAttribute("files", fileService.getFiles(user.getUserId()));
-            return "home";
+            return "redirect:/home";
         }
 
         try {
