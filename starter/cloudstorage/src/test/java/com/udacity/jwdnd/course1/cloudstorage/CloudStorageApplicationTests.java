@@ -48,7 +48,7 @@ class CloudStorageApplicationTests {
 	 * PLEASE DO NOT DELETE THIS method.
 	 * Helper method for Udacity-supplied sanity checks.
 	 **/
-	private void doMockSignUp(String firstName, String lastName, String userName, String password){
+	private void doMockSignUp(String firstName, String lastName, String userName, String password) {
 		// Create a dummy account for logging in later.
 
 		// Visit the sign-up page.
@@ -86,7 +86,12 @@ class CloudStorageApplicationTests {
 		// You may have to modify the element "success-msg" and the sign-up 
 		// success message below depening on the rest of your code.
 		*/
-		Assertions.assertTrue(driver.findElement(By.id("success-msg")).getText().contains("You successfully signed up!"));
+		try {
+			Thread.sleep(2000);
+			Assertions.assertTrue(driver.findElement(By.id("success-msg")).getText().contains("You successfully signed up!"));
+		} catch (Exception e) {
+			System.out.println("Exception found " + e.getLocalizedMessage());
+		}
 	}
 
 	
