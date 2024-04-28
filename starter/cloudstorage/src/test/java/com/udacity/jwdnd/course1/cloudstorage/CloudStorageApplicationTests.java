@@ -1,5 +1,6 @@
 package com.udacity.jwdnd.course1.cloudstorage;
 
+import com.fasterxml.classmate.util.ClassStack;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
@@ -205,6 +206,83 @@ class CloudStorageApplicationTests {
 
 	}
 
+	@Test
+	public void testHomePageNotAccessibleWithoutLogin() {
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertEquals("http://localhost:" + this.port + "/login", driver.getCurrentUrl());
+	}
+
+	@Test
+	public void testAccessToHomePageAfterLogin() {
+		doMockSignUp("ajay", "choudhary", "ajay7", "q2q");
+		doLogIn("ajay7", "q2q");
+
+		// Check homepage is accessible after login
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertEquals("Home", driver.getTitle());
+
+		// Check homepage is not accessible after logout
+		HomePage homePage = new HomePage(driver);
+		homePage.logout();
+
+		Assertions.assertEquals("Login", driver.getTitle());
+
+		driver.get("http://localhost:" + this.port + "/home");
+		Assertions.assertEquals("Home", driver.getTitle());
+	}
 
 
+	@Test
+	public void testCreateNote() {
+		doMockSignUp("ajay", "choudhary", "ajay7", "q2q");
+		doLogIn("ajay7", "q2q");
+
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		// Create note
+		HomePage homePage = new HomePage(driver);
+		homePage.navigateToNotesTab();
+		homePage.createNote("NoteTitle", "Description");
+
+		//Check note
+		driver.get("http://localhost:" + this.port + "/home");
+		homePage.navigateToNotesTab();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-item-title")));
+		Assertions.assertEquals("NoteTitle", homePage.getFirstNoteTitle());
+	}
+
+	@Test
+	public void testEditNote() {
+		testCreateNote();
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		HomePage homePage = new HomePage(driver);
+
+		homePage.navigateToNotesTab();
+		homePage.editNote("NoteTitle2", "Description2");
+
+		driver.get("http://localhost:" + this.port + "/home");
+		homePage.navigateToNotesTab();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-item-title")));
+		Assertions.assertEquals("NoteTitle2", homePage.getFirstNoteTitle());
+	}
+
+	@Test
+	public void testDeleteNote() {
+		testCreateNote();
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		HomePage homePage = new HomePage(driver);
+
+		homePage.navigateToNotesTab();
+		homePage.deleteNote();
+
+		driver.get("http://localhost:" + this.port + "/home");
+		homePage.navigateToNotesTab();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-item-title")));
+		Assertions.assertNotEquals("NoteTitle", homePage.getFirstNoteTitle());
+	}
 }

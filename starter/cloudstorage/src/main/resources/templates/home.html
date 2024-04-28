@@ -15,7 +15,7 @@
             </div>
             <div id="logoutDiv">
                 <form th:action="@{/logout}" method="POST">
-                    <button type="submit" class="btn btn-secondary float-right">Logout</button>
+                    <button id="logout-button" type="submit" class="btn btn-secondary float-right">Logout</button>
                 </form>
             </div>
             <div id="contentDiv" style="clear: right;">
@@ -68,7 +68,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="nav-notes" role="tabpanel" aria-labelledby="nav-notes-tab">
-                        <button style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
+                        <button id="add-note-button" style="margin: 0.25em;" type="button" class="btn btn-info float-right" onclick="showNoteModal()">
                             + Add a New Note
                         </button>
 
@@ -84,17 +84,17 @@
                                 <tbody>
                                     <tr th:each="note: ${notes}">
                                         <td>
-                                            <button type="button" class="btn btn-success"
+                                            <button id="edit-note-button" type="button" class="btn btn-success"
                                             th:attr="onclick=|showNoteModal('${note.noteId}', '${note.noteTitle}', '${note.noteDescription}')|">
                                                 Edit
                                             </button>
                                             <form th:action="@{/deleteNote}" method="post" style="display: inline;">
                                                 <input type="hidden" name="noteId" th:value="${note.noteId}" />
-                                                <button type="submit" class="btn btn-danger">Delete</button>
+                                                <button id="delete-note-button" type="submit" class="btn btn-danger">Delete</button>
                                             </form>
                                         </td>
-                                        <th scope="row" th:text="${note.noteTitle}"> </th>
-                                        <td th:text="${note.noteDescription}"> </td>
+                                        <th id="note-item-title" scope="row" th:text="${note.noteTitle}"> </th>
+                                        <td id="note-item-description" th:text="${note.noteDescription}"> </td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -125,7 +125,7 @@
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                        <button type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
+                                        <button id="note-submit-button" type="button" class="btn btn-primary" onclick="$('#noteSubmit').click();">Save changes</button>
                                     </div>
                                 </div>
                             </div>
