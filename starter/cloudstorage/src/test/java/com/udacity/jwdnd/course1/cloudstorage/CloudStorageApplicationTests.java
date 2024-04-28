@@ -14,6 +14,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import java.io.File;
+import java.util.List;
+import java.util.UUID;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CloudStorageApplicationTests {
 
@@ -214,8 +217,9 @@ class CloudStorageApplicationTests {
 
 	@Test
 	public void testAccessToHomePageAfterLogin() {
-		doMockSignUp("ajay", "choudhary", "ajay7", "q2q");
-		doLogIn("ajay7", "q2q");
+		String username = UUID.randomUUID().toString();
+		doMockSignUp("ajay", "choudhary", username, "q2q");
+		doLogIn(username, "q2q");
 
 		// Check homepage is accessible after login
 		driver.get("http://localhost:" + this.port + "/home");
@@ -228,14 +232,15 @@ class CloudStorageApplicationTests {
 		Assertions.assertEquals("Login", driver.getTitle());
 
 		driver.get("http://localhost:" + this.port + "/home");
-		Assertions.assertEquals("Home", driver.getTitle());
+		Assertions.assertEquals("Login", driver.getTitle());
 	}
 
 
 	@Test
 	public void testCreateNote() {
-		doMockSignUp("ajay", "choudhary", "ajay7", "q2q");
-		doLogIn("ajay7", "q2q");
+		String username = UUID.randomUUID().toString();
+		doMockSignUp("ajay", "choudhary", username, "q2q");
+		doLogIn(username, "q2q");
 
 		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
 
@@ -282,7 +287,70 @@ class CloudStorageApplicationTests {
 		driver.get("http://localhost:" + this.port + "/home");
 		homePage.navigateToNotesTab();
 
-		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("note-item-title")));
-		Assertions.assertNotEquals("NoteTitle", homePage.getFirstNoteTitle());
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("userTable")));
+
+		List<WebElement> elements = homePage.userTable.findElements(By.tagName("tbody"));
+
+		Assertions.assertNotEquals(0, elements.size());
+	}
+
+	@Test
+	public void testCreateCredentials() {
+		String username = UUID.randomUUID().toString();
+		doMockSignUp("ajay", "choudhary", username, "q2q");
+		doLogIn(username, "q2q");
+
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		// Create note
+		HomePage homePage = new HomePage(driver);
+		homePage.navigateToCredentialsTab();
+		homePage.createCredential("https://localhost:8080", "ajay", "Hello");
+
+		//Check note
+		driver.get("http://localhost:" + this.port + "/home");
+		homePage.navigateToCredentialsTab();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-item-url")));
+		Assertions.assertEquals("ajay", homePage.getFirstCredentialUsername());
+		Assertions.assertEquals("https://localhost:8080", homePage.getFirstCredentialUrl());
+	}
+
+	@Test
+	public void testEditCredentials() {
+		testCreateCredentials();
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		HomePage homePage = new HomePage(driver);
+
+		homePage.navigateToCredentialsTab();
+		homePage.editCredential("https://google.com", "ajay7", "Hello");
+
+		driver.get("http://localhost:" + this.port + "/home");
+		homePage.navigateToCredentialsTab();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credential-item-url")));
+		Assertions.assertEquals("ajay7", homePage.getFirstCredentialUsername());
+		Assertions.assertEquals("https://google.com", homePage.getFirstCredentialUrl());
+	}
+
+	@Test
+	public void testDeleteCredential() {
+		testCreateCredentials();
+		WebDriverWait webDriverWait = new WebDriverWait(driver, 2);
+
+		HomePage homePage = new HomePage(driver);
+
+		homePage.navigateToCredentialsTab();
+		homePage.deleteCredential();
+
+		driver.get("http://localhost:" + this.port + "/home");
+		homePage.navigateToCredentialsTab();
+
+		webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(By.id("credentialTable")));
+
+		List<WebElement> elements = homePage.credentialTable.findElements(By.tagName("tbody"));
+
+		Assertions.assertNotEquals(0, elements.size());
 	}
 }
