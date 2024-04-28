@@ -29,21 +29,18 @@ public class NotesController {
             // Create new note
             int rowsAffected = noteService.createNote(note, user.getUserId());
             if (rowsAffected < 0) {
-                model.addAttribute("infoMessage", "Note creation failed");
+                return "redirect:/result?error";
             } else {
-                model.addAttribute("infoMessage", "Note created successfully");
+                return "redirect:/result?success";
             }
         } else {
             int rowsAffected = noteService.updateNote(note);
             if (rowsAffected < 0) {
-                model.addAttribute("infoMessage", "Note update failed");
+                return "redirect:/result?error";
             } else {
-                model.addAttribute("infoMessage", "Note updated successfully");
+                return "redirect:/result?success";
             }
         }
-
-        model.addAttribute("notes", noteService.getNotes(user.getUserId()));
-        return "redirect:/home";
     }
 
     @PostMapping("/deleteNote")
@@ -53,13 +50,10 @@ public class NotesController {
         int rowsAffected = noteService.deleteNote(noteId);
 
         if (rowsAffected < 0) {
-            model.addAttribute("infoMessage", "Note deletion failed");
+            return "redirect:/result?error";
         } else {
-            model.addAttribute("infoMessage", "Note deleted successfully");
+            return "redirect:/result?success";
         }
-
-        model.addAttribute("notes", noteService.getNotes(user.getUserId()));
-        return "redirect:/home";
     }
 
     public User getUser() {

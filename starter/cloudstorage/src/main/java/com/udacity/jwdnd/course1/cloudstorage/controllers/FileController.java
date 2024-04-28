@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.util.Base64;
@@ -30,15 +31,14 @@ public class FileController {
     }
 
     @PostMapping("/file")
-    public String handleSaveFile(@RequestParam("fileUpload") MultipartFile file, Model model) {
+    public String handleSaveFile(@RequestParam("fileUpload") MultipartFile file, RedirectAttributes redirectAttributes) {
         User user = getUser();
 
         File existingFile = fileService.getFile(file.getOriginalFilename());
 
         if (existingFile != null) {
-            model.addAttribute("infoMessage", "File with this name already exists");
-            model.addAttribute("files", fileService.getFiles(user.getUserId()));
-            return "redirect:/home";
+            redirectAttributes.addAttribute("error", "File with this name already exists");
+            return "redirect:/result?error";
         }
 
         try {
@@ -52,16 +52,13 @@ public class FileController {
             int rowsAffected = fileService.insertFile(newFile);
 
             if (rowsAffected < 0) {
-                model.addAttribute("infoMessage", "File upload failed");
+                return "redirect:/result?error";
             } else {
-                model.addAttribute("infoMessage", "File uploaded successfully");
+                return "redirect:/result?success";
             }
         } catch (IOException exception) {
-            model.addAttribute("infoMessage", "File upload failed");
+            return "redirect:/result?error";
         }
-
-        model.addAttribute("files", fileService.getFiles(user.getUserId()));
-        return "redirect:/home";
     }
 
     @PostMapping("/deleteFile")
@@ -71,13 +68,10 @@ public class FileController {
         int rowsAffected = fileService.deleteFile(fileId);
 
         if (rowsAffected < 0) {
-            model.addAttribute("infoMessage", "File deletion failed");
+            return "redirect:/result?error";
         } else {
-            model.addAttribute("infoMessage", "File deletion successfully");
+            return "redirect:/result?success";
         }
-
-        model.addAttribute("files", fileService.getFiles(user.getUserId()));
-        return "redirect:/home";
     }
 
     @GetMapping("/download/{fileId}")

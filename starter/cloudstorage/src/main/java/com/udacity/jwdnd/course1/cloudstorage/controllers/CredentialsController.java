@@ -29,27 +29,20 @@ public class CredentialsController {
 
         credentialModel.setUserId(user.getUserId());
 
+        int rowsAffected;
         if (credentialModel.getCredentialId() == null) {
             // Create new credential
-            int rowsAffected = credentialService.createCredentialModel(credentialModel);
-            if (rowsAffected < 0) {
-                model.addAttribute("infoMessage", "Credential creation failed");
-            } else {
-                model.addAttribute("infoMessage", "Credential created successfully");
-            }
+            rowsAffected = credentialService.createCredentialModel(credentialModel);
         } else {
             // Update credential
-            int rowsAffected = credentialService.updateCredentialModel(credentialModel);
-            if (rowsAffected < 0) {
-                model.addAttribute("infoMessage", "Credential update failed");
-            } else {
-                model.addAttribute("infoMessage", "Credential updated successfully");
-            }
+            rowsAffected = credentialService.updateCredentialModel(credentialModel);
         }
 
-        model.addAttribute("credentials", credentialService.getCredentialList(user.getUserId()));
-
-        return "redirect:/home";
+        if (rowsAffected < 0) {
+            return "redirect:/result?error";
+        } else {
+            return "redirect:/result?success";
+        }
     }
 
     @PostMapping("/deleteCredential")
@@ -59,13 +52,10 @@ public class CredentialsController {
         int rowsAffected = credentialService.deleteCredential(credentialId);
 
         if (rowsAffected < 0) {
-            model.addAttribute("infoMessage", "Credential deletion failed");
+            return "redirect:/result?error";
         } else {
-            model.addAttribute("infoMessage", "Credential deleted successfully");
+            return "redirect:/result?success";
         }
-
-        model.addAttribute("credentials", credentialService.getCredentialList(user.getUserId()));
-        return "redirect:/home";
     }
 
     public User getUser() {
